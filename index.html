@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="script.js">
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <title>Pokedex_EST</title>
+</head>
+
+<body>
+    <h1>Pokedex</h1>
+    <div class="pokeContainer" id="pokeContainer">
+
+    </div>
+
+</body>
+
+<script>
+    ScrollReveal().reveal('.pokeContainer', { delay: 150 });
+
+    const pokeContainer = document.querySelector("#pokeContainer");
+    const pokemonCount = 1023
+
+    const colors = {
+        fire: '#EF7374',
+        grass: '#82C274',
+        electric: '#FCD659',
+        water: '#5DC6E6',
+        ground: '#B88E6F',
+        rock: '#CBC7AD',
+        fairy: '#F5A2F5',
+        poison: '#B884DD',
+        bug: '#B8C26A',
+        dragon: '#8D98EC',
+        psychic: '#BAABC8',
+        flying: '#ADD2F5',
+        fighting: '#CC997A',
+        normal: '#C1C2C1',
+        ice:"#81DFF7",
+        ghost:"#A284A2",
+        dark:"#998B8C",
+        steel:"#98C2D1"
+    }
+
+    const mainTypes = Object.keys(colors);
+
+    const fetchPokemons = async () => {
+        for (let i = 1; i <= pokemonCount; i++) {
+            await getPokemons(i)
+        }
+    }
+
+    const getPokemons = async (id) => {
+        const url = `https://pokeapi.co/api/v2/pokemon/${id}`
+        const resp = await fetch(url)
+        const data = await resp.json()
+        createPokemonCard(data)
+    }
+
+    const createPokemonCard = (poke) => {
+        const card = document.createElement('div')
+        card.classList.add("pokemon")
+
+        const name = poke.name[0].toUpperCase() + poke.name.slice(1)
+        const id = poke.id.toString().padStart(3, '0')
+
+        const pokeTypes = poke.types.map(type => type.type.name)
+        const type = mainTypes.find(type => pokeTypes.indexOf(type) > -1)
+        const color = colors[type]
+
+        card.style.backgroundColor = color
+
+        const pokemonInnerHTML = `
+            <div class="imgContainer">
+                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png" alt="${name}">
+            </div>
+            <div class="info">
+                <span class="number">#${id}</span>
+                <h3 class="name" title="${name}"">${name}</h3>
+                <small class="type">Type: <span>${type}</span></small>
+            </div>
+        `
+
+        card.innerHTML = pokemonInnerHTML
+
+        pokeContainer.appendChild(card)
+    }
+    fetchPokemons()
+</script>
+
+</html>
